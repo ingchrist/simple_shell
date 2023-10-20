@@ -10,8 +10,8 @@ int (*get_builtin(char *xdax))(data_shell *)
 	builtin_t builtin[] = {
 		{ "env", _evxz },
 		{ "exit", txt_sh },
-		{ "setenv", _setenv },
-		{ "unsetenv", _unsetenv },
+		{ "setenv", _xvx },
+		{ "unsetenv", _untvx },
 		{ "cd", xcx_sh },
 		{ "help", gx_hxp },
 		{ NULL, NULL }

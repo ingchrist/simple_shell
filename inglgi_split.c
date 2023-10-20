@@ -1,78 +1,78 @@
 #include "main.h"
 
 /**
- * swap_char - swaps | and & for non-printed chars
+ * xsp_crx - swaps | and & for non-printed chars
  *
  * @input: input string
  * @bool: type of swap
  * Return: swapped string
  */
-char *swap_char(char *input, int bool)
+char *xsp_crx(char *input, int bool)
 {
-	int i;
+	int xix;
 
 	if (bool == 0)
 	{
-		for (i = 0; input[i]; i++)
+		for (xix = 0; input[xix]; xix++)
 		{
-			if (input[i] == '|')
+			if (input[xix] == '|')
 			{
-				if (input[i + 1] != '|')
-					input[i] = 16;
+				if (input[xix + 1] != '|')
+					input[xix] = 16;
 				else
-					i++;
+					xix++;
 			}
 
-			if (input[i] == '&')
+			if (input[xix] == '&')
 			{
-				if (input[i + 1] != '&')
-					input[i] = 12;
+				if (input[xix + 1] != '&')
+					input[xix] = 12;
 				else
-					i++;
+					xix++;
 			}
 		}
 	}
 	else
 	{
-		for (i = 0; input[i]; i++)
+		for (xix = 0; input[xix]; xix++)
 		{
-			input[i] = (input[i] == 16 ? '|' : input[i]);
-			input[i] = (input[i] == 12 ? '&' : input[i]);
+			input[xix] = (input[xix] == 16 ? '|' : input[xix]);
+			input[xix] = (input[xix] == 12 ? '&' : input[xix]);
 		}
 	}
 	return (input);
 }
 
 /**
- * add_nodes - add separators and command lines in the lists
+ * ad_xnds - add separators and command lines in the lists
  *
  * @head_s: head of separator list
  * @head_l: head of command lines list
  * @input: input string
  * Return: no return
  */
-void add_nodes(sep_list **head_s, line_list **head_l, char *input)
+void ad_xnds(sep_list **head_s, line_list **head_l, char *input)
 {
-	int i;
+	int xix;
 	char *line;
 
-	input = swap_char(input, 0);
+	input = xsp_crx(input, 0);
 
-	for (i = 0; input[i]; i++)
+	for (xix = 0; input[xix]; xix++)
 	{
-		if (input[i] == ';')
-			a_sp_nd_d(head_s, input[i]);
+		if (input[xix] == ';')
+			a_sp_nd_d(head_s, input[xix]);
 
-		if (input[i] == '|' || input[i] == '&')
+		if (input[xix] == '|' || input[xix] == '&')
 		{
-			a_sp_nd_d(head_s, input[i]);
-			i++;
+			a_sp_nd_d(head_s, input[xix]);
+			xix++;
 		}
 	}
 
 	line = _ttk(input, ";|&");
 	do {
-		line = swap_char(line, 1);
+		line = xsp_crx(line, 1);
 		d_li_de_d(head_l, line);
 		line = _ttk(NULL, ";|&");
 	} while (line != NULL);
@@ -80,14 +80,14 @@ void add_nodes(sep_list **head_s, line_list **head_l, char *input)
 }
 
 /**
- * go_next - go to the next command line stored
+ * xgx_xtz - go to the next command line stored
  *
  * @list_s: separator list
  * @list_l: command line list
  * @datash: data structure
  * Return: no return
  */
-void go_next(sep_list **list_s, line_list **list_l, data_shell *datash)
+void xgx_xtz(sep_list **list_s, line_list **list_l, data_shell *datash)
 {
 	int loop_sep;
 	sep_list *ls_s;
@@ -122,24 +122,24 @@ void go_next(sep_list **list_s, line_list **list_l, data_shell *datash)
 }
 
 /**
- * split_commands - splits command lines according to
+ * xpt_csx - splits command lines according to
  * the separators ;, | and &, and executes them
  *
  * @datash: data structure
  * @input: input string
  * Return: 0 to exit, 1 to continue
  */
-int split_commands(data_shell *datash, char *input)
+int xpt_csx(data_shell *datash, char *input)
 {
 
 	sep_list *head_s, *list_s;
 	line_list *head_l, *list_l;
-	int loop;
+	int lxpz;
 
 	head_s = NULL;
 	head_l = NULL;
 
-	add_nodes(&head_s, &head_l, input);
+	ad_xnds(&head_s, &head_l, input);
 
 	list_s = head_s;
 	list_l = head_l;
@@ -147,14 +147,14 @@ int split_commands(data_shell *datash, char *input)
 	while (list_l != NULL)
 	{
 		datash->input = list_l->line;
-		datash->args = split_line(datash->input);
-		loop = xcx_lnx(datash);
+		datash->args = xlt_xlx(datash->input);
+		lxpz = xcx_lnx(datash);
 		free(datash->args);
 
-		if (loop == 0)
+		if (lxpz == 0)
 			break;
 
-		go_next(&list_s, &list_l, datash);
+		xgx_xtz(&list_s, &list_l, datash);
 
 		if (list_l != NULL)
 			list_l = list_l->next;
@@ -163,21 +163,21 @@ int split_commands(data_shell *datash, char *input)
 	fr_s_lt(&head_s);
 	fr_ne_ls(&head_l);
 
-	if (loop == 0)
+	if (lxpz == 0)
 		return (0);
 	return (1);
 }
 
 /**
- * split_line - tokenizes the input string
+ * xlt_xlx - tokenizes the input string
  *
  * @input: input string.
  * Return: string splitted.
  */
-char **split_line(char *input)
+char **xlt_xlx(char *input)
 {
 	size_t bsize;
-	size_t i;
+	size_t xix;
 	char **tokens;
 	char *token;
 
@@ -192,12 +192,12 @@ char **split_line(char *input)
 	token = _ttk(input, TOK_DELIM);
 	tokens[0] = token;
 
-	for (i = 1; token != NULL; i++)
+	for (xix = 1; token != NULL; xix++)
 	{
-		if (i == bsize)
+		if (xix == bsize)
 		{
 			bsize += TOK_BUFSIZE;
-			tokens = _reallocdp(tokens, i, sizeof(char *) * bsize);
+			tokens = _reallocdp(tokens, xix, sizeof(char *) * bsize);
 			if (tokens == NULL)
 			{
 				write(STDERR_FILENO, ": allocation error\n", 18);
@@ -205,7 +205,7 @@ char **split_line(char *input)
 			}
 		}
 		token = _ttk(NULL, TOK_DELIM);
-		tokens[i] = token;
+		tokens[xix] = token;
 	}
 
 	return (tokens);

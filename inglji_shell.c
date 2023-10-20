@@ -22,23 +22,23 @@ int xcx_sh(data_shell *datash)
 
 	if (dir == NULL || !shm || !shm2 || !dsh)
 	{
-		cd_to_home(datash);
+		cdx_tx_hm(datash);
 		return (1);
 	}
 
 	if (_rcp("-", dir) == 0)
 	{
-		cd_previous(datash);
+		xcd_pvs(datash);
 		return (1);
 	}
 
 	if (_rcp(".", dir) == 0 || _rcp("..", dir) == 0)
 	{
-		cd_dot(datash);
+		cdx_dt(datash);
 		return (1);
 	}
 
-	cd_to(datash);
+	xcd_tx(datash);
 
 	return (1);
 }

@@ -1,14 +1,14 @@
 #include "main.h"
 
 /**
- * check_env - checks if the typed variable is an env variable
+ * ck_nvx - checks if the typed variable is an env variable
  *
  * @h: head of linked list
  * @in: input string
  * @data: data structure
  * Return: no return
  */
-void check_env(r_var **h, char *in, data_shell *data)
+void ck_nvx(r_var **h, char *in, data_shell *data)
 {
 	int row, chr, j, lval;
 	char **_envr;
@@ -42,7 +42,7 @@ void check_env(r_var **h, char *in, data_shell *data)
 }
 
 /**
- * check_vars - check if the typed variable is $$ or $?
+ * cxk_vsz - check if the typed variable is $$ or $?
  *
  * @h: head of the linked list
  * @in: input string
@@ -50,41 +50,41 @@ void check_env(r_var **h, char *in, data_shell *data)
  * @data: data structure
  * Return: no return
  */
-int check_vars(r_var **h, char *in, char *st, data_shell *data)
+int cxk_vsz(r_var **h, char *in, char *st, data_shell *data)
 {
-	int i, lst, lpd;
+	int xix, lst, lpd;
 
 	lst = _xtln(st);
 	lpd = _xtln(data->pid);
 
-	for (i = 0; in[i]; i++)
+	for (xix = 0; in[xix]; xix++)
 	{
-		if (in[i] == '$')
+		if (in[xix] == '$')
 		{
-			if (in[i + 1] == '?')
-				d_rr_de(h, 2, st, lst), i++;
-			else if (in[i + 1] == '$')
-				d_rr_de(h, 2, data->pid, lpd), i++;
-			else if (in[i + 1] == '\n')
+			if (in[xix + 1] == '?')
+				d_rr_de(h, 2, st, lst), xix++;
+			else if (in[xix + 1] == '$')
+				d_rr_de(h, 2, data->pid, lpd), xix++;
+			else if (in[xix + 1] == '\n')
 				d_rr_de(h, 0, NULL, 0);
-			else if (in[i + 1] == '\0')
+			else if (in[xix + 1] == '\0')
 				d_rr_de(h, 0, NULL, 0);
-			else if (in[i + 1] == ' ')
+			else if (in[xix + 1] == ' ')
 				d_rr_de(h, 0, NULL, 0);
-			else if (in[i + 1] == '\t')
+			else if (in[xix + 1] == '\t')
 				d_rr_de(h, 0, NULL, 0);
-			else if (in[i + 1] == ';')
+			else if (in[xix + 1] == ';')
 				d_rr_de(h, 0, NULL, 0);
 			else
-				check_env(h, in + i, data);
+				ck_nvx(h, in + xix, data);
 		}
 	}
 
-	return (i);
+	return (xix);
 }
 
 /**
- * replaced_input - replaces string into variables
+ * rld_itz - replaces string into variables
  *
  * @head: head of the linked list
  * @input: input string
@@ -92,42 +92,42 @@ int check_vars(r_var **h, char *in, char *st, data_shell *data)
  * @nlen: new length
  * Return: replaced string
  */
-char *replaced_input(r_var **head, char *input, char *new_input, int nlen)
+char *rld_itz(r_var **head, char *input, char *new_input, int nlen)
 {
 	r_var *indx;
-	int i, j, k;
+	int xix, j, k;
 
 	indx = *head;
-	for (j = i = 0; i < nlen; i++)
+	for (j = xix = 0; xix < nlen; xix++)
 	{
 		if (input[j] == '$')
 		{
 			if (!(indx->len_var) && !(indx->len_val))
 			{
-				new_input[i] = input[j];
+				new_input[xix] = input[j];
 				j++;
 			}
 			else if (indx->len_var && !(indx->len_val))
 			{
 				for (k = 0; k < indx->len_var; k++)
 					j++;
-				i--;
+				xix--;
 			}
 			else
 			{
 				for (k = 0; k < indx->len_val; k++)
 				{
-					new_input[i] = indx->val[k];
-					i++;
+					new_input[xix] = indx->val[k];
+					xix++;
 				}
 				j += (indx->len_var);
-				i--;
+				xix--;
 			}
 			indx = indx->next;
 		}
 		else
 		{
-			new_input[i] = input[j];
+			new_input[xix] = input[j];
 			j++;
 		}
 	}
@@ -136,22 +136,22 @@ char *replaced_input(r_var **head, char *input, char *new_input, int nlen)
 }
 
 /**
- * rep_var - calls functions to replace string into vars
+ * rwp_vrw - calls functions to replace string into vars
  *
  * @input: input string
- * @datash: data structure
+ * @dah: data structure
  * Return: replaced string
  */
-char *rep_var(char *input, data_shell *datash)
+char *rwp_vrw(char *input, data_shell *dah)
 {
 	r_var *head, *indx;
 	char *status, *new_input;
 	int olen, nlen;
 
-	status = x_to(datash->status);
+	status = x_to(dah->status);
 	head = NULL;
 
-	olen = check_vars(&head, input, status, datash);
+	olen = cxk_vsz(&head, input, status, dah);
 
 	if (head == NULL)
 	{
@@ -173,7 +173,7 @@ char *rep_var(char *input, data_shell *datash)
 	new_input = malloc(sizeof(char) * (nlen + 1));
 	new_input[nlen] = '\0';
 
-	new_input = replaced_input(&head, input, new_input, nlen);
+	new_input = rld_itz(&head, input, new_input, nlen);
 
 	free(input);
 	free(status);

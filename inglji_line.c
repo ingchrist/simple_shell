@@ -18,5 +18,5 @@ int xcx_lnx(data_shell *datash)
 	if (builtin != NULL)
 		return (builtin(datash));
 
-	return (cmd_exec(datash));
+	return (xdx_xc(datash));
 }

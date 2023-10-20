@@ -1,18 +1,18 @@
 #include "main.h"
 
 /**
- * free_data - frees data structure
+ * fe_dt - frees data structure
  *
  * @datash: data structure
  * Return: no return
  */
-void free_data(data_shell *datash)
+void fe_dt(data_shell *datash)
 {
-	unsigned int i;
+	unsigned int xix;
 
-	for (i = 0; datash->_environ[i]; i++)
+	for (xix = 0; datash->_environ[xix]; xix++)
 	{
-		free(datash->_environ[i]);
+		free(datash->_environ[xix]);
 	}
 
 	free(datash->_environ);
@@ -20,15 +20,15 @@ void free_data(data_shell *datash)
 }
 
 /**
- * set_data - Initialize data structure
+ * sz_da - Initialize data structure
  *
  * @datash: data structure
  * @av: argument vector
  * Return: no return
  */
-void set_data(data_shell *datash, char **av)
+void sz_da(data_shell *datash, char **av)
 {
-	unsigned int i;
+	unsigned int xix;
 
 	datash->av = av;
 	datash->input = NULL;
@@ -36,17 +36,17 @@ void set_data(data_shell *datash, char **av)
 	datash->status = 0;
 	datash->counter = 1;
 
-	for (i = 0; environ[i]; i++)
+	for (xix = 0; environ[xix]; xix++)
 		;
 
-	datash->_environ = malloc(sizeof(char *) * (i + 1));
+	datash->_environ = malloc(sizeof(char *) * (xix + 1));
 
-	for (i = 0; environ[i]; i++)
+	for (xix = 0; environ[xix]; xix++)
 	{
-		datash->_environ[i] = _sdp(environ[i]);
+		datash->_environ[xix] = _sdp(environ[xix]);
 	}
 
-	datash->_environ[i] = NULL;
+	datash->_environ[xix] = NULL;
 	datash->pid = x_to(getpid());
 }
 
@@ -64,9 +64,9 @@ int main(int ac, char **av)
 	(void) ac;
 
 	signal(SIGINT, xt_stx);
-	set_data(&datash, av);
-	shell_loop(&datash);
-	free_data(&datash);
+	sz_da(&datash, av);
+	shl_lp(&datash);
+	fe_dt(&datash);
 	if (datash.status < 0)
 		return (255);
 	return (datash.status);
