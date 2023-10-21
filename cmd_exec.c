@@ -1,23 +1,23 @@
 #include "main.h"
 
 /**
- * sx_crx - checks ":" if is in the current directory.
+ * is_cdir - checks ":" if is in the current directory.
  * @path: type char pointer char.
- * @xix: type int pointer of index.
+ * @i: type int pointer of index.
  * Return: 1 if the path is searchable in the cd, 0 otherwise.
  */
-int sx_crx(char *path, int *xix)
+int is_cdir(char *path, int *i)
 {
-	if (path[*xix] == ':')
+	if (path[*i] == ':')
 		return (1);
 
-	while (path[*xix] != ':' && path[*xix])
+	while (path[*i] != ':' && path[*i])
 	{
-		*xix += 1;
+		*i += 1;
 	}
 
-	if (path[*xix])
-		*xix += 1;
+	if (path[*i])
+		*i += 1;
 
 	return (0);
 }
@@ -32,34 +32,34 @@ int sx_crx(char *path, int *xix)
 char *_which(char *cmd, char **_environ)
 {
 	char *path, *ptr_path, *token_path, *dir;
-	int len_dir, len_cmd, xix;
+	int len_dir, len_cmd, i;
 	struct stat st;
 
-	path = _gxtx("PATH", _environ);
+	path = _getenv("PATH", _environ);
 	if (path)
 	{
-		ptr_path = _sdp(path);
-		len_cmd = _xtln(cmd);
-		token_path = _ttk(ptr_path, ":");
-		xix = 0;
+		ptr_path = _strdup(path);
+		len_cmd = _strlen(cmd);
+		token_path = _strtok(ptr_path, ":");
+		i = 0;
 		while (token_path != NULL)
 		{
-			if (sx_crx(path, &xix))
+			if (is_cdir(path, &i))
 				if (stat(cmd, &st) == 0)
 					return (cmd);
-			len_dir = _xtln(token_path);
+			len_dir = _strlen(token_path);
 			dir = malloc(len_dir + len_cmd + 2);
-			_sty(dir, token_path);
-			_sct(dir, "/");
-			_sct(dir, cmd);
-			_sct(dir, "\0");
+			_strcpy(dir, token_path);
+			_strcat(dir, "/");
+			_strcat(dir, cmd);
+			_strcat(dir, "\0");
 			if (stat(dir, &st) == 0)
 			{
 				free(ptr_path);
 				return (dir);
 			}
 			free(dir);
-			token_path = _ttk(NULL, ":");
+			token_path = _strtok(NULL, ":");
 		}
 		free(ptr_path);
 		if (stat(cmd, &st) == 0)
@@ -73,70 +73,70 @@ char *_which(char *cmd, char **_environ)
 }
 
 /**
- * ixs_etbl - determines if is an executable
+ * is_executable - determines if is an executable
  *
- * @dth: data structure
+ * @datash: data structure
  * Return: 0 if is not an executable, other number if it does
  */
-int ixs_etbl(data_shell *dth)
+int is_executable(data_shell *datash)
 {
 	struct stat st;
-	int xix;
+	int i;
 	char *input;
 
-	input = dth->args[0];
-	for (xix = 0; input[xix]; xix++)
+	input = datash->args[0];
+	for (i = 0; input[i]; i++)
 	{
-		if (input[xix] == '.')
+		if (input[i] == '.')
 		{
-			if (input[xix + 1] == '.')
+			if (input[i + 1] == '.')
 				return (0);
-			if (input[xix + 1] == '/')
+			if (input[i + 1] == '/')
 				continue;
 			else
 				break;
 		}
-		else if (input[xix] == '/' && xix != 0)
+		else if (input[i] == '/' && i != 0)
 		{
-			if (input[xix + 1] == '.')
+			if (input[i + 1] == '.')
 				continue;
-			xix++;
+			i++;
 			break;
 		}
 		else
 			break;
 	}
-	if (xix == 0)
+	if (i == 0)
 		return (0);
 
-	if (stat(input + xix, &st) == 0)
+	if (stat(input + i, &st) == 0)
 	{
-		return (xix);
+		return (i);
 	}
-	gxt_ror(dth, 127);
+	get_error(datash, 127);
 	return (-1);
 }
 
 /**
- * ckx_ror_cd - verifies if user has permissions to access
+ * check_error_cmd - verifies if user has permissions to access
  *
  * @dir: destination directory
- * @dth: data structure
+ * @datash: data structure
  * Return: 1 if there is an error, 0 if not
  */
-int ckx_ror_cd(char *dir, data_shell *dth)
+int check_error_cmd(char *dir, data_shell *datash)
 {
 	if (dir == NULL)
 	{
-		gxt_ror(dth, 127);
+		get_error(datash, 127);
 		return (1);
 	}
 
-	if (_rcp(dth->args[0], dir) != 0)
+	if (_strcmp(datash->args[0], dir) != 0)
 	{
 		if (access(dir, X_OK) == -1)
 		{
-			gxt_ror(dth, 126);
+			get_error(datash, 126);
 			free(dir);
 			return (1);
 		}
@@ -144,9 +144,9 @@ int ckx_ror_cd(char *dir, data_shell *dth)
 	}
 	else
 	{
-		if (access(dth->args[0], X_OK) == -1)
+		if (access(datash->args[0], X_OK) == -1)
 		{
-			gxt_ror(dth, 126);
+			get_error(datash, 126);
 			return (1);
 		}
 	}
@@ -155,12 +155,12 @@ int ckx_ror_cd(char *dir, data_shell *dth)
 }
 
 /**
- * xdx_xc - executes command lines
+ * cmd_exec - executes command lines
  *
- * @dth: data relevant (args and input)
+ * @datash: data relevant (args and input)
  * Return: 1 on success.
  */
-int xdx_xc(data_shell *dth)
+int cmd_exec(data_shell *datash)
 {
 	pid_t pd;
 	pid_t wpd;
@@ -169,13 +169,13 @@ int xdx_xc(data_shell *dth)
 	char *dir;
 	(void) wpd;
 
-	exec = ixs_etbl(dth);
+	exec = is_executable(datash);
 	if (exec == -1)
 		return (1);
 	if (exec == 0)
 	{
-		dir = _which(dth->args[0], dth->_environ);
-		if (ckx_ror_cd(dir, dth) == 1)
+		dir = _which(datash->args[0], datash->_environ);
+		if (check_error_cmd(dir, datash) == 1)
 			return (1);
 	}
 
@@ -183,14 +183,14 @@ int xdx_xc(data_shell *dth)
 	if (pd == 0)
 	{
 		if (exec == 0)
-			dir = _which(dth->args[0], dth->_environ);
+			dir = _which(datash->args[0], datash->_environ);
 		else
-			dir = dth->args[0];
-		execve(dir + exec, dth->args, dth->_environ);
+			dir = datash->args[0];
+		execve(dir + exec, datash->args, datash->_environ);
 	}
 	else if (pd < 0)
 	{
-		perror(dth->av[0]);
+		perror(datash->av[0]);
 		return (1);
 	}
 	else
@@ -200,6 +200,6 @@ int xdx_xc(data_shell *dth)
 		} while (!WIFEXITED(state) && !WIFSIGNALED(state));
 	}
 
-	dth->status = state / 256;
+	datash->status = state / 256;
 	return (1);
 }

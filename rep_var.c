@@ -1,14 +1,14 @@
 #include "main.h"
 
 /**
- * ck_nvx - checks if the typed variable is an env variable
+ * check_env - checks if the typed variable is an env variable
  *
  * @h: head of linked list
  * @in: input string
  * @data: data structure
  * Return: no return
  */
-void ck_nvx(r_var **h, char *in, data_shell *data)
+void check_env(r_var **h, char *in, data_shell *data)
 {
 	int row, chr, j, lval;
 	char **_envr;
@@ -20,8 +20,8 @@ void ck_nvx(r_var **h, char *in, data_shell *data)
 		{
 			if (_envr[row][chr] == '=')
 			{
-				lval = _xtln(_envr[row] + chr + 1);
-				d_rr_de(h, j, _envr[row] + chr + 1, lval);
+				lval = _strlen(_envr[row] + chr + 1);
+				add_rvar_node(h, j, _envr[row] + chr + 1, lval);
 				return;
 			}
 
@@ -38,11 +38,11 @@ void ck_nvx(r_var **h, char *in, data_shell *data)
 			break;
 	}
 
-	d_rr_de(h, j, NULL, 0);
+	add_rvar_node(h, j, NULL, 0);
 }
 
 /**
- * cxk_vsz - check if the typed variable is $$ or $?
+ * check_vars - check if the typed variable is $$ or $?
  *
  * @h: head of the linked list
  * @in: input string
@@ -50,41 +50,41 @@ void ck_nvx(r_var **h, char *in, data_shell *data)
  * @data: data structure
  * Return: no return
  */
-int cxk_vsz(r_var **h, char *in, char *st, data_shell *data)
+int check_vars(r_var **h, char *in, char *st, data_shell *data)
 {
-	int xix, lst, lpd;
+	int i, lst, lpd;
 
-	lst = _xtln(st);
-	lpd = _xtln(data->pid);
+	lst = _strlen(st);
+	lpd = _strlen(data->pid);
 
-	for (xix = 0; in[xix]; xix++)
+	for (i = 0; in[i]; i++)
 	{
-		if (in[xix] == '$')
+		if (in[i] == '$')
 		{
-			if (in[xix + 1] == '?')
-				d_rr_de(h, 2, st, lst), xix++;
-			else if (in[xix + 1] == '$')
-				d_rr_de(h, 2, data->pid, lpd), xix++;
-			else if (in[xix + 1] == '\n')
-				d_rr_de(h, 0, NULL, 0);
-			else if (in[xix + 1] == '\0')
-				d_rr_de(h, 0, NULL, 0);
-			else if (in[xix + 1] == ' ')
-				d_rr_de(h, 0, NULL, 0);
-			else if (in[xix + 1] == '\t')
-				d_rr_de(h, 0, NULL, 0);
-			else if (in[xix + 1] == ';')
-				d_rr_de(h, 0, NULL, 0);
+			if (in[i + 1] == '?')
+				add_rvar_node(h, 2, st, lst), i++;
+			else if (in[i + 1] == '$')
+				add_rvar_node(h, 2, data->pid, lpd), i++;
+			else if (in[i + 1] == '\n')
+				add_rvar_node(h, 0, NULL, 0);
+			else if (in[i + 1] == '\0')
+				add_rvar_node(h, 0, NULL, 0);
+			else if (in[i + 1] == ' ')
+				add_rvar_node(h, 0, NULL, 0);
+			else if (in[i + 1] == '\t')
+				add_rvar_node(h, 0, NULL, 0);
+			else if (in[i + 1] == ';')
+				add_rvar_node(h, 0, NULL, 0);
 			else
-				ck_nvx(h, in + xix, data);
+				check_env(h, in + i, data);
 		}
 	}
 
-	return (xix);
+	return (i);
 }
 
 /**
- * rld_itz - replaces string into variables
+ * replaced_input - replaces string into variables
  *
  * @head: head of the linked list
  * @input: input string
@@ -92,42 +92,42 @@ int cxk_vsz(r_var **h, char *in, char *st, data_shell *data)
  * @nlen: new length
  * Return: replaced string
  */
-char *rld_itz(r_var **head, char *input, char *new_input, int nlen)
+char *replaced_input(r_var **head, char *input, char *new_input, int nlen)
 {
 	r_var *indx;
-	int xix, j, k;
+	int i, j, k;
 
 	indx = *head;
-	for (j = xix = 0; xix < nlen; xix++)
+	for (j = i = 0; i < nlen; i++)
 	{
 		if (input[j] == '$')
 		{
 			if (!(indx->len_var) && !(indx->len_val))
 			{
-				new_input[xix] = input[j];
+				new_input[i] = input[j];
 				j++;
 			}
 			else if (indx->len_var && !(indx->len_val))
 			{
 				for (k = 0; k < indx->len_var; k++)
 					j++;
-				xix--;
+				i--;
 			}
 			else
 			{
 				for (k = 0; k < indx->len_val; k++)
 				{
-					new_input[xix] = indx->val[k];
-					xix++;
+					new_input[i] = indx->val[k];
+					i++;
 				}
 				j += (indx->len_var);
-				xix--;
+				i--;
 			}
 			indx = indx->next;
 		}
 		else
 		{
-			new_input[xix] = input[j];
+			new_input[i] = input[j];
 			j++;
 		}
 	}
@@ -136,22 +136,22 @@ char *rld_itz(r_var **head, char *input, char *new_input, int nlen)
 }
 
 /**
- * rwp_vrw - calls functions to replace string into vars
+ * rep_var - calls functions to replace string into vars
  *
  * @input: input string
- * @dah: data structure
+ * @datash: data structure
  * Return: replaced string
  */
-char *rwp_vrw(char *input, data_shell *dah)
+char *rep_var(char *input, data_shell *datash)
 {
 	r_var *head, *indx;
 	char *status, *new_input;
 	int olen, nlen;
 
-	status = x_to(dah->status);
+	status = aux_itoa(datash->status);
 	head = NULL;
 
-	olen = cxk_vsz(&head, input, status, dah);
+	olen = check_vars(&head, input, status, datash);
 
 	if (head == NULL)
 	{
@@ -173,11 +173,11 @@ char *rwp_vrw(char *input, data_shell *dah)
 	new_input = malloc(sizeof(char) * (nlen + 1));
 	new_input[nlen] = '\0';
 
-	new_input = rld_itz(&head, input, new_input, nlen);
+	new_input = replaced_input(&head, input, new_input, nlen);
 
 	free(input);
 	free(status);
-	fe_vr_ls(&head);
+	free_rvar_list(&head);
 
 	return (new_input);
 }
